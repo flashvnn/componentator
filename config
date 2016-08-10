@@ -1,0 +1,6 @@
+name                                : Componentator
+version                             : 1.0.0
+author                              : Peter Širka
+url                                 : https://componentator.com
+
+disable-clear-temporary-directory   : true

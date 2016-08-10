@@ -1,0 +1,102 @@
+<div data-component="form" data-title="Component" data-component-path="common.window" data-if="value === 'detail'" data-width="1200px" data-component-id="detail">
+	<div class="ui-form-padding bg-smoke">
+		<br />
+		<br />
+		<div class="row">
+			<div class="col-md-8 m">
+				<div style="font-size:16px"><b>Do you want to find complete open-source projects?</b></div>
+				<div class="mt10">Please visit <a href="https://www.totaljs.com" target="_blank">www.totaljs.com</a> and download e.g. Eshop + CMS, HelpDesk, SuperAdmin and other applications for free for everyone. All projects are written in Node.js.</div>
+			</div>
+			<div class="col-md-4 center">
+				<a href="https://www.totaljs.com/support/" target="_blank"><img src="https://www.totaljs.com/img/button-support.png" border="0" alt="Total.js / jComponent support" /></a>
+			</div>
+		</div>
+		<br />
+	</div>
+	<div class="ui-form-padding" style="margin-top:25px">
+		<div class="message message-alert">Do you want to create or modify components? Contact us <a href="mailto:info@totaljs.com">info@totaljs.com</a>.</div>
+	</div>
+	<div data-component="template" data-component-path="detail">
+		<script type="text/html">
+			<div class="ui-form-padding">
+				<!--
+				<h2>Component informations</h2>
+				<table class="table table-striped">
+					<tbody>
+						<tr>
+							<td class="col-xs-4 b">Color</td>
+							<td><span class="component-color" style="background-color:{{ color }}"></span> {{ color }}</td>
+						</tr>
+						{{ if isresponsive }}
+						<tr>
+							<td class="col-xs-4 b">Size</td>
+							<td><b>responsive</b></td>
+						</tr>
+						{{ fi }}
+						<tr>
+							<td class="col-xs-4 b">Version</td>
+							<td>{{ version }}</td>
+						</tr>
+						<tr>
+							<td class="col-xs-4 b">Created</td>
+							<td>{{ datecreated | format('yyyy-MM-dd') }}</td>
+						</tr>
+					</tbody>
+				</table>
+				-->
+
+				{{ if body }}
+					<h2>Description</h2>
+					<div>{{ body | marked }}</div>
+					<hr />
+				{{ fi }}
+
+				{{ if html && !ishiddenhtml }}
+					<h2>HTML</h2>
+					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(1)">Copy to clipboard</a>
+					<pre class="copyclipboard1"><code class="html">&lt;!--
+The MIT License
+Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+--&gt;
+
+{{ html }}</code></pre>
+				{{ fi }}
+
+				{{ if dependencies }}
+					<h2>Dependencies</h2>
+					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(2)">Copy to clipboard</a>
+					<pre class="copyclipboard2"><code class="html">{{ dependencies | children('dependencies') | duplicate }}</code></pre>
+				{{ fi }}
+
+				{{ if css }}
+					<h2>CSS</h2>
+					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(3)">Copy to clipboard</a>
+					<pre class="copyclipboard3"><code class="css">/*
+The MIT License
+Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+*/
+
+{{ css | children('css') | duplicate('css') }}</code></pre>
+				{{ fi }}
+
+				{{ if js }}
+					<h2>JavaScript</h2>
+					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(4)">Copy to clipboard</a>
+					<pre class="copyclipboard4"><code class="javascript">/*
+The MIT License
+Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+*/
+
+{{ js | children('js') }}</code></pre>
+				{{ fi }}
+
+				<h2>Preview</h2>
+				<div>
+					<iframe class="preview" src="about:blank" width="100%" height="100%" frameborder="0"{{ if ishiddenhtml }} style="min-height:600px"{{ fi }}></iframe>
+				</div>
+				<div class="mt10"><a href="javascript:download()" class="red fs11"><i class="fa fa-floppy-o mr5"></i>Download HTML</a></div>
+			</div>
+		</script>
+	</div>
+	<br />
+</div>

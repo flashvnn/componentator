@@ -1,0 +1,74 @@
+@{layout('')}
+@{meta('Free JavaScript and CSS components for your websites and web applications', 'A JavaScript and CSS component repository for creating beautiful websites and web applications.', 'css,javascript,html,components,templates,widgets,calendars,buttons,tables,grids,layouts')}
+@{head('<meta property="og:title" content="Web Components storage" />')}
+@{head('<meta property="og:url" content="https://componentator.com/" />')}
+@{head('<meta property="og:image" content="https://componentator.com/img/social.jpg" />')}
+@{head('<meta property="og:description" content="A component repository for creating beautiful websites and web applications." />')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="robots" content="all,follow" />
+	<link href="//fonts.googleapis.com/css?family=Palanquin:100,700" rel="stylesheet" type="text/css" />
+	<link href="//fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.css" />
+	@{import('meta', 'head', 'default.css', 'favicon.ico')}
+</head>
+<body>
+
+	<div id="loading"></div>
+	<div id="body-scroll">
+		<div id="container-scroll">
+			<div class="content">
+				<br class="hidden-xs" />
+				<div style="min-height:200px">
+					<br />
+					<h1 class="center">All components are free: <b>$0.00</b></h1>
+					<p class="claim">Use, share and <i class="fa red fa-heart"></i> love them. They are free for everyone without any restrictions. <a href="https://twitter.com/componentator" style="color:#55ACEE" target="_blank"><span class="fa fa-twitter" style="margin-right:3px"></span>@componentator</a></p>
+					<br />
+					<div class="container">
+						<div class="row">
+							<div class="col-md-8 col-md-offset-2 nplr">
+								<div class="search">
+									<div><span class="fa fa-search"></span></div>
+									<div><input type="text" placeholder="Type word and press enter" name="q" autofocus="autofocus" data-component="" data-component-path="grid.filter.q" data-component-keypress="false" /></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br />
+					<br />
+					<div data-component="visible" data-component-path="grid.datasource" data-if="value.length === 0">
+						<br />
+						<br />
+						<br />
+						<br />
+						<div class="center">
+							<div class="b"><span class="fa fa-search"></span> I didn't find any components.</div>
+							<div>Try to change search pharse.</div>
+						</div>
+					</div>
+					<div data-component-url="/templates/search.html"></div>
+					<div data-component-url="/templates/detail.html"></div>
+				</div>
+				<br />
+			</div>
+			<footer>
+				<div class="center"><a href="https://www.totaljs.com"><img src="https://www.totaljs.com/img/signature.png" alt="total.js - web framework for node.js" border="0" /></a></div>
+				<div><a href="https://twitter.com/componentator" style="color:#55ACEE" target="_blank"><span class="fa fa-twitter" style="margin-right:3px"></span>@componentator</a></div>
+				<div>All rights reserverd &copy; 2015-2016 by <i class="fa fa-building"></i><a href="https://www.totaljs.com/contact/">Totaljs.com Ltd</a></div>
+			</footer>
+		</div>
+	</div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	@{import('default.js')}
+
+</body>
+</html>
