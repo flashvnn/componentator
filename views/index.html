@@ -13,13 +13,12 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta name="robots" content="all,follow" />
-	<link href="//fonts.googleapis.com/css?family=Palanquin:100,700" rel="stylesheet" type="text/css" />
-	<link href="//fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+	<link href="//fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet" />
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.css" />
 	@{import('meta', 'head', 'default.css', 'favicon.ico')}
 </head>
 <body>
-
+	<a href="https://github.com/totaljs/components" target="_blank" class="fork"><img src="/img/fork.png" alt="Fork me on GitHub" border="0" /></a>
 	<div id="loading"></div>
 	<div id="body-scroll">
 		<div id="container-scroll">
@@ -27,19 +26,21 @@
 				<br class="hidden-xs" />
 				<div style="min-height:200px">
 					<br />
-					<h1 class="center">All components are free: <b>$0.00</b></h1>
+					<h1 class="center">Free Open-Source <b>UI components</b></h1>
 					<p class="claim">Use, share and <i class="fa red fa-heart"></i> love them. They are free for everyone without any restrictions. <a href="https://twitter.com/componentator" style="color:#55ACEE" target="_blank"><span class="fa fa-twitter" style="margin-right:3px"></span>@componentator</a></p>
 					<br />
 					<div class="container">
 						<div class="row">
 							<div class="col-md-8 col-md-offset-2 nplr">
 								<div class="search">
-									<div><span class="fa fa-search"></span></div>
-									<div><input type="text" placeholder="Type word and press enter" name="q" autofocus="autofocus" data-component="" data-component-path="grid.filter.q" data-component-keypress="false" /></div>
+									<div class="search-clean hidden"><span class="fa fa-times"></span></div>
+									<div class="search-icon"><span class="fa fa-search"></span></div>
+									<div><input type="text" placeholder="What do you want to find?" name="q" autofocus="autofocus" data-component="" data-component-path="grid.filter.q" data-component-keypress="true" /></div>
 								</div>
 							</div>
 						</div>
 					</div>
+					<br />
 					<br />
 					<br />
 					<div data-component="visible" data-component-path="grid.datasource" data-if="value.length === 0">
@@ -52,7 +53,22 @@
 							<div>Try to change search pharse.</div>
 						</div>
 					</div>
-					<div data-component-url="/templates/search.html"></div>
+
+					<div class="container">
+						<div class="row">
+							<div data-component="grid" data-component-path="grid.datasource" data-options-page="Page #" data-max="20" data-options-button="Show more components" data-component-id="grid">
+								<script type="text/html">
+									<div class="col-sm-3 col-xs-6 component" data-id="{{ linker }}">
+										<div class="component-picture"><img src="{{ picture }}" alt="{{ name }}" border="0" class="img-responsive" /></div>
+										<div class="component-color" style="{{ color | color }}"></div>
+										<div class="component-title">{{ name }}</div>
+										<div class="component-date">{{ datecreated }}</div>
+									</div>
+								</script>
+							</div>
+						</div>
+					</div>
+
 					<div data-component-url="/templates/detail.html"></div>
 				</div>
 				<br />

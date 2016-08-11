@@ -19,13 +19,13 @@
 	<div data-component="template" data-component-path="detail">
 		<script type="text/html">
 			<div class="ui-form-padding">
-				<!--
+				<br />
 				<h2>Component informations</h2>
 				<table class="table table-striped">
 					<tbody>
 						<tr>
 							<td class="col-xs-4 b">Color</td>
-							<td><span class="component-color" style="background-color:{{ color }}"></span> {{ color }}</td>
+							<td>{{ color }}</td>
 						</tr>
 						{{ if isresponsive }}
 						<tr>
@@ -35,16 +35,26 @@
 						{{ fi }}
 						<tr>
 							<td class="col-xs-4 b">Version</td>
-							<td>{{ version }}</td>
+							<td>v{{ version }}</td>
 						</tr>
 						<tr>
 							<td class="col-xs-4 b">Created</td>
-							<td>{{ datecreated | format('yyyy-MM-dd') }}</td>
+							<td>{{ datecreated }}</td>
+						</tr>
+						<tr>
+							<td class="col-xs-4 b">Author</td>
+							<td>{{ author }}</td>
+						</tr>
+						<tr>
+							<td class="col-xs-4 b">Email address</td>
+							<td><a href="mailto:{{ email }}">{{ email }}</a></td>
+						</tr>
+						<tr>
+							<td class="col-xs-4 b">License</td>
+							<td>{{ if license === 'MIT' }}<img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="MIT" class="mr5" />{{ else }}{{ license }}{{ fi }}</td>
 						</tr>
 					</tbody>
 				</table>
-				-->
-
 				{{ if body }}
 					<h2>Description</h2>
 					<div>{{ body | marked }}</div>
@@ -56,7 +66,7 @@
 					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(1)">Copy to clipboard</a>
 					<pre class="copyclipboard1"><code class="html">&lt;!--
 The MIT License
-Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+Copyright {{ datecreated | format('yyyy') }} (c) {{ author }} &lt;{{ email }}&gt;
 --&gt;
 
 {{ html }}</code></pre>
@@ -73,7 +83,7 @@ Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
 					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(3)">Copy to clipboard</a>
 					<pre class="copyclipboard3"><code class="css">/*
 The MIT License
-Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+Copyright {{ datecreated | format('yyyy') }} (c) {{ author }} &lt;{{ email }}&gt;
 */
 
 {{ css | children('css') | duplicate('css') }}</code></pre>
@@ -84,7 +94,7 @@ Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
 					<div class="copyclipboard"><span class="fa fa-copy"></span> <a href="javascript:copyclipboard(4)">Copy to clipboard</a>
 					<pre class="copyclipboard4"><code class="javascript">/*
 The MIT License
-Copyright 2006-2016 (c) Peter Širka &lt;petersirka@gmail.com&gt;
+Copyright {{ datecreated | format('yyyy') }} (c) {{ author }} &lt;{{ email }}&gt;
 */
 
 {{ js | children('js') }}</code></pre>

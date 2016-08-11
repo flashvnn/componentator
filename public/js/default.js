@@ -22,11 +22,31 @@ jC.ready(function() {
 	}, 1000);
 });
 
+ON('#grid', function(component) {
+	component.next = function(page) {
+		grid.filter.page = page;
+		AJAX('GET /api/components/', grid.filter, '+grid.datasource');
+	};
+});
+
+WATCH('common.window', function(path, value) {
+	if (!value)
+		location.hash = '';
+});
+
+WATCH('grid.filter.q', function(path, value) {
+	$('.search-clean').toggleClass('hidden', !value);
+});
+
 $(document).ready(function() {
 
 	isMOBILE && $('.search').find('input').on('keyup', function(e) {
 		if (e.keyCode === 13)
 			$(this).blur();
+	});
+
+	$(document).on('click', '.search-clean', function() {
+		SET('grid.filter.q', '');
 	});
 
 	$(document).on('click', '.component', function() {
@@ -46,24 +66,15 @@ $(document).ready(function() {
 		loading(false);
 	}, 500);
 
+	on_resize();
+	$(window).on('resize', on_resize);
+
 	if (!window.hljs)
 		return;
 
 	$('pre code').each(function(i, block) {
 		hljs.highlightBlock(block);
 	});
-
-	on_resize();
-	$(window).on('resize', on_resize);
-});
-
-
-Tangular.register('tags', function(value) {
-	var arr = value.split(',');
-	var builder = '';
-	for (var i = 0, length = arr.length; i < length; i++)
-		builder += '<span class="tag">' + arr[i].trim() + '</span>';
-	return builder;
 });
 
 function on_resize() {
@@ -84,6 +95,18 @@ function on_resize() {
 	container.css({ height: h - top });
 	body.css({ height: 'auto' });
 }
+
+Tangular.register('tags', function(value) {
+	var arr = value.split(',');
+	var builder = '';
+	for (var i = 0, length = arr.length; i < length; i++)
+		builder += '<span class="tag">' + arr[i].trim() + '</span>';
+	return builder;
+});
+
+Tangular.register('color', function(value) {
+	return value === 'transparent' ? 'background:url(/img/transparent.png) no-repeat 50% 50%' : 'background-color:' + value;
+});
 
 function copyclipboard(type) {
 	var range = document.createRange();
@@ -151,18 +174,18 @@ function show_detail(linker) {
 
 	AJAX('GET /components/{0}.json'.format(component.id), function(response) {
 
-		FIND('#detail').element.find('.ui-form-title b').html(response.name + ' (' + response.id + ')');
+		FIND('#detail').element.find('.ui-form-title b').html(response.name);
 
 		var tags = response.tags.join(' ').toLowerCase();
 		var plus = [];
 
-		tags.indexOf('jcomponent') !== -1 && plus.push('- download [jComponent library](https://raw.githubusercontent.com/petersirka/jComponent/master/jcta.min.js)');
-		tags.indexOf('bootstrap') !== -1 && plus.push('- download the [Bootstrap Grid System](/css/bootstrap.min.css) (only CSS)');
+		tags.indexOf('jcomponent') !== -1 && plus.push('- download [jComponent library](https://github.com/totaljs/components/tree/master/0dependencies)');
+		tags.indexOf('bootstrap') !== -1 && plus.push('- download the [Bootstrap Grid System](https://github.com/totaljs/components/tree/master/0dependencies) (only CSS)');
 
 		if (plus.length)
 			response.body += '\n\n---\n\n__Dependencies:__\n' + plus.join('\n') + '\n\njComponent is a component library for jQuery. With jComponent you can create reusable and powerful web components for your web applications. It doesn\'t contain any dependencies (with except jQuery) and the library contains many features like number/date/string formatting, async operations, template engine and many more.';
 
-		response.dependencies = (response.dependencies || '').replace(/\"\/\//g, '\"https://').replace('<script src="/v4.x.x/jcta.min.js"></script>', '<script src="https://componentator.com/v4.x.x/jcta.min.js"></script>');
+		response.dependencies = (response.dependencies || '').replace(/\"\/\//g, '\"https://');
 
 		var html_dep = '';
 		var html_css = '';
@@ -453,7 +476,7 @@ COMPONENT('grid', function() {
 			}
 
 			if (items.length > 0)
-				output += '<div class="ui-grid-page">' + self.attr('data-options-page').replace('#', i + 1) + '</div><div class="row">' + items + '</div>';
+				output += '<div class="ui-grid-page"><div>' + self.attr('data-options-page').replace('#', i + 1) + '</div></div><div class="row">' + items + '</div>';
 		}
 
 		element.html(output);
@@ -491,10 +514,7 @@ COMPONENT('template', function() {
 
 function loading(visible, cb) {
 	var el = $('#loading');
-	if (visible)
-		el.fadeIn(300, cb);
-	else
-		el.fadeOut(300, cb);
+	visible ? el.fadeIn(300, cb) : el.fadeOut(300, cb);
 }
 
 function getPages(length, max) {

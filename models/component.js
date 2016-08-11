@@ -9,18 +9,22 @@ NEWSCHEMA('Component').make(function(schema) {
 		var options = controller.query;
 		var page = U.parseInt(options.page) - 1;
 
-
-		if (options.search)
-			options.search = options.search.toSearch();
+		if (options.q)
+			options.q = options.q.toSearch();
 
 		for (var i = 0, length = db.length; i < length; i++) {
 			var item = db[i];
-			if (options.color && item.color != item.color)
+
+			if (options.color && options.color != item.color)
 				continue;
+
 			if (options.response && !item.responsive)
 				continue;
-			if (options.search && item.search.indexOf(search) === -1)
+
+			if (options.q && item.search.indexOf(options.q) === -1)
 				continue;
+
+			item.datecreated = new Date().format('dd. MMMM yyyy');
 			output.push(item);
 		}
 
@@ -30,6 +34,7 @@ NEWSCHEMA('Component').make(function(schema) {
 	schema.addWorkflow('init', function(error, model, options, callback) {
 		F.global.database = [];
 		Fs.readFile(F.path.public('/components/database.json'), function(err, data) {
+
 			if (data)
 				F.global.database = data.toString('utf8').parseJSON();
 
@@ -82,7 +87,7 @@ NEWSCHEMA('Component').make(function(schema) {
 									var filename = F.path.public(picture);
 									U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
 									detail.picture = picture;
-									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', '') });
+									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated });
 									break;
 								case 'example.html':
 									detail.html = response;
@@ -105,6 +110,7 @@ NEWSCHEMA('Component').make(function(schema) {
 					Fs.writeFile(F.path.public('/components/{0}.json'.format(detail.id)), JSON.stringify(detail), 'utf8', next);
 				});
 			}, function() {
+				database.quicksort('datecreated', true);
 				F.global.database = database;
 				Fs.writeFile(F.path.public('/components/database.json'), JSON.stringify(database), 'utf8', NOOP);
 				callback(SUCCESS(true));
