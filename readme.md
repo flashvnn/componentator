@@ -4,7 +4,7 @@
 
 # Installation
 
-__License__: [MIT](license.txt). __Componentator__ needs latest Total.js from NPM `+v2.0.1`. __
+__License__: [MIT](license.txt). __Componentator__ needs latest Total.js from NPM `+v2.0.1`.
 
 - `npm install total.js`
 - run `node debug.js`
