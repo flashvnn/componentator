@@ -45,7 +45,6 @@ footer a:hover { color: black; }
 .component-picture { border: 1px solid #F0F0F0; border-radius: 4px; padding: 4px; background-color: white; box-shadow: 0 5px 10px #F8F8F8; }
 .component-picture img { margin: 0 auto; max-height: 200px; border-radius: 4px; }
 .component-title { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 12px 0 0; line-height: 20px; color: black; font-weight: bold; width: 100%; font-family: $font; font-size: 14px; font-weight: 400; text-align: center; }
-.component-title span:last-child { position: relative; display: inline-block; margin: 4px 0 0 0; }
 .component .component-color { position: absolute; margin: -18px 0 0 -10px; z-index: 2; }
 .component-color { width: 28px; height: 28px; border: 1px solid #E0E0E0; border-radius: 100px; }
 .component-info { font-size: 12px; color: #AAB2BD; overflow-y: hidden; text-overflow: ellipsis; white-space: nowrap; }
