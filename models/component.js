@@ -32,6 +32,9 @@ NEWSCHEMA('Component').make(function(schema) {
 
 	schema.addWorkflow('init', function(error, model, options, callback) {
 		F.global.database = [];
+
+		TRY(() => Fs.mkdirSync(F.path.public('/components/')));
+
 		Fs.readFile(F.path.public('/components/database.json'), function(err, data) {
 
 			if (data)
