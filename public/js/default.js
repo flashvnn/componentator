@@ -1,3 +1,5 @@
+PING('GET /api/ping/');
+
 var MONTHS = ['January', 'February', 'March', 'April', 'May', 'Juny', 'July', 'August', 'September', 'October', 'November', 'December'];
 var XS;
 var grid = {};
@@ -159,9 +161,13 @@ function show_detail(linker) {
 	if (!component)
 		return;
 
+	loading(true);
+
 	AJAX('GET /components/{0}.json'.format(component.id), function(response) {
 
-		FIND('#detail').element.find('.ui-form-title b').html(response.name);
+		FIND('#detail', function(component) {
+			component.element.find('.ui-form-title b').html(response.name);
+		});
 
 		var tags = response.tags.join(' ').toLowerCase();
 		var plus = [];
@@ -199,21 +205,24 @@ function show_detail(linker) {
 
 		SET('detail', response);
 
-		$('pre code').each(function(i, block) {
-			hljs.highlightBlock(block);
+		FIND('#detail', function(component) {
+
+			setTimeout(function() {
+				var ifrm = $('.preview').get(0);
+				ifrm.contentWindow.document.open();
+				ifrm.contentWindow.document.write(response.code);
+				ifrm.contentWindow.document.close();
+			}, 500);
+
+			$('pre code').each(function(i, block) {
+				hljs.highlightBlock(block);
+			});
+
+			loading(false, 200);
 		});
 
-		setTimeout(function() {
-			var ifrm = $('.preview').get(0);
-			ifrm.contentWindow.document.open();
-			ifrm.contentWindow.document.write(response.code);
-			ifrm.contentWindow.document.close();
-		}, 500);
+		SET('common.window', 'detail');
 
-		setTimeout(function() {
-			loading(false);
-			SET('common.window', 'detail');
-		}, 500);
 	});
 }
 
@@ -274,7 +283,7 @@ COMPONENT('form', function() {
 		self.element = $('#' + self._id);
 		self.element.data(COM_ATTR, self);
 
-		self.element.find('button').on('click', function(e) {
+		self.element.on('click', 'button', function(e) {
 
 			switch (this.name) {
 				case 'submit':
@@ -435,6 +444,26 @@ COMPONENT('template', function() {
 	};
 });
 
+COMPONENT('importer', function() {
+	var self = this;
+	var imported = false;
+	self.readonly();
+	self.setter = function(value) {
+
+		if (imported) {
+			self.setter = null;
+			return;
+		}
+
+		if (!self.evaluate(self.attr('data-if')))
+			return;
+
+		imported = true;
+		IMPORT(self.attr('data-url'));
+		self.remove();
+	};
+});
+
 function loading(visible, cb) {
 	var el = $('#loading');
 	var timeout = 0;
@@ -445,7 +474,7 @@ function loading(visible, cb) {
 	}
 
 	setTimeout(function() {
-		visible ? el.fadeIn(300, cb) : el.fadeOut(300, cb);
+		visible ? el.show() : el.fadeOut(300, cb);
 	}, timeout);
 }
 
