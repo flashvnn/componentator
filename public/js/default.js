@@ -302,7 +302,7 @@ COMPONENT('form', function() {
 	self.setter = function(value) {
 		var isHidden = !EVALUATE(self.path, self.condition);
 		self.element.toggleClass('hidden', isHidden);
-		!isHidden ? self.element.animate({ scrollTop: 0 }, 300);
+		!isHidden && self.element.animate({ scrollTop: 0 }, 300);
 	};
 });
 
