@@ -302,8 +302,7 @@ COMPONENT('form', function() {
 	self.setter = function(value) {
 		var isHidden = !EVALUATE(self.path, self.condition);
 		self.element.toggleClass('hidden', isHidden);
-		if (!isHidden)
-			self.element.find('input:first-child').focus();
+		!isHidden ? self.element.animate({ scrollTop: 0 }, 300);
 	};
 });
 

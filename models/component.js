@@ -59,12 +59,11 @@ NEWSCHEMA('Component').make(function(schema) {
 
 			JSON.parse(response).wait(function(item, next) {
 
-				var arr = [];
 				var target = url + encodeURIComponent(item) + '/';
 				var detail = {};
 				var current = F.global.database.findItem('name', item);
-
-				detail.dateupdated = new Date();
+				var arr = [];
+				var skip = false;
 
 				arr.push(target + 'component.json');
 				arr.push(target + 'readme.md');
@@ -72,6 +71,8 @@ NEWSCHEMA('Component').make(function(schema) {
 				arr.push(target + 'dependencies.html');
 				arr.push(target + 'component.css');
 				arr.push(target + 'component.js');
+
+				detail.dateupdated = new Date();
 
 				arr.wait(function(item, next) {
 
@@ -89,14 +90,17 @@ NEWSCHEMA('Component').make(function(schema) {
 									detail.linker = detail.name.slug();
 									detail.depends = detail.dependencies;
 									detail.dateimported = F.datetime;
+
 									var picture = '/components/{0}.{1}'.format(detail.id, U.getExtension(detail.picture));
 									var filename = F.path.public(picture);
-									U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
-									detail.picture = picture;
 
-									if (current && current.token === detail.token)
+									if (current && current.token === detail.token) {
 										arr.length = 0;
+										skip = true;
+									} else
+										U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
 
+									detail.picture = picture;
 									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated, dateupdated: detail.dateupdated, token: detail.token });
 									break;
 								case 'example.html':
@@ -120,7 +124,7 @@ NEWSCHEMA('Component').make(function(schema) {
 					});
 
 				}, function() {
-					Fs.writeFile(F.path.public('/components/{0}.json'.format(detail.id)), JSON.stringify(detail), 'utf8', next);
+					skip ? next() : Fs.writeFile(F.path.public('/components/{0}.json'.format(detail.id)), JSON.stringify(detail), 'utf8', next);
 				});
 			}, function() {
 				database.quicksort('datecreated', false);
