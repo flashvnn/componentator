@@ -80,10 +80,10 @@ WATCH('grid.filter.q', function(path, value) {
 	if (current === last)
 		return;
 	last = current;
-	AJAX('GET /api/components/', filter, function(response) {
+	AJAXCACHE('GET /api/components/', filter, function(response) {
 		SET('grid.datasource', response);
 		loading(false, 1000);
-	});
+	}, '5 minutes');
 }, true);
 
 $(document).ready(function() {
@@ -143,18 +143,6 @@ function on_resize() {
 	container.css({ height: h - top });
 	body.css({ height: 'auto' });
 }
-
-Tangular.register('tags', function(value) {
-	var arr = value.split(',');
-	var builder = '';
-	for (var i = 0, length = arr.length; i < length; i++)
-		builder += '<span class="tag">' + arr[i].trim() + '</span>';
-	return builder;
-});
-
-Tangular.register('color', function(value) {
-	return value === 'transparent' ? 'background:url(/img/transparent.png) no-repeat 50% 50%' : 'background-color:' + value;
-});
 
 function copyclipboard(type) {
 	var range = document.createRange();
@@ -538,13 +526,25 @@ Tangular.register('github', function(value) {
 
 Tangular.register('date', function(value) {
 	var dt = value.parseDate();
-	var is = (Date.now() - dt.getTime()) / 1000 / 60000 < 5;
-
-	return (is ? '<span class="badge badge-green mr5">HOT NEW</span>' : '') + dt.format('dd. {0} yyyy').format(MONTHS[dt.getMonth()]);
+	return ((Date.now() - dt.getTime()) / 1000 / 60000 < 5 ? '<span class="badge badge-green mr5">HOT NEW</span>' : '') + dt.format('dd. {0} yyyy').format(MONTHS[dt.getMonth()]);
 });
 
 Tangular.register('changelog', function(value) {
 	if (value)
 		return (Date.now() - value.parseDate().getTime()) / 1000 / 60000 < 5 ? '<span class="badge badge-red mr5">UPDATED</span>' : '';
 	return '';
+});
+
+Tangular.register('tags', function(value) {
+	if (!value)
+		return '';
+	var arr = value instanceof Array ? value : value.split(',');
+	var builder = '';
+	for (var i = 0, length = arr.length; i < length; i++)
+		builder += '<span class="tag">' + arr[i].trim() + '</span>';
+	return builder;
+});
+
+Tangular.register('color', function(value) {
+	return value === 'transparent' ? 'background:url(/img/transparent.png) no-repeat 50% 50%' : 'background-color:' + value;
 });

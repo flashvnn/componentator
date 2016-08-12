@@ -35,12 +35,18 @@
 						{{ fi }}
 						<tr>
 							<td class="col-xs-4 b">Version</td>
-							<td>v{{ version }}</td>
+							<td>{{ dateupdated | changelog }}v{{ version }}</td>
 						</tr>
 						<tr>
 							<td class="col-xs-4 b">Created</td>
-							<td>{{ datecreated }}</td>
+							<td>{{ datecreated | format('yyyy-MM-dd HH:mm') }}</td>
 						</tr>
+						{{ if dateupdated }}
+						<tr>
+							<td class="col-xs-4 b">Updated</td>
+							<td>{{ dateupdated | format('yyyy-MM-dd HH:mm') }}</td>
+						</tr>
+						{{ fi }}
 						<tr>
 							<td class="col-xs-4 b">Author</td>
 							<td>{{ author }}</td>
