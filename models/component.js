@@ -62,6 +62,7 @@ NEWSCHEMA('Component').make(function(schema) {
 				var arr = [];
 				var target = url + encodeURIComponent(item) + '/';
 				var detail = {};
+				var current = F.global.database.findItem('name', item);
 
 				detail.dateupdated = new Date();
 
@@ -83,6 +84,7 @@ NEWSCHEMA('Component').make(function(schema) {
 								case 'component.json':
 									U.extend(detail, response.parseJSON());
 									detail.id = detail.name.hash();
+									detail.token = response.md5();
 									detail.search = detail.name.toSearch() + ' ' + detail.tags.join(' ').toSearch();
 									detail.linker = detail.name.slug();
 									detail.depends = detail.dependencies;
@@ -91,7 +93,11 @@ NEWSCHEMA('Component').make(function(schema) {
 									var filename = F.path.public(picture);
 									U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
 									detail.picture = picture;
-									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated, dateupdated: detail.dateupdated });
+
+									if (current && current.token === detail.token)
+										arr.length = 0;
+
+									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated, dateupdated: detail.dateupdated, token: detail.token });
 									break;
 								case 'example.html':
 									detail.html = response;
