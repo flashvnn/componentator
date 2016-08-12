@@ -84,10 +84,10 @@ NEWSCHEMA('Component').make(function(schema) {
 							switch (U.getName(item)) {
 								case 'component.json':
 									U.extend(detail, response.parseJSON());
-									detail.id = detail.name.hash();
 									detail.token = response.md5();
 									detail.search = detail.name.toSearch() + ' ' + detail.tags.join(' ').toSearch();
 									detail.linker = detail.name.slug();
+									detail.id = detail.linker.hash();
 									detail.depends = detail.dependencies;
 									detail.dateimported = F.datetime;
 

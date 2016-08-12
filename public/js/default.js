@@ -157,13 +157,14 @@ function copyclipboard(type) {
 
 function show_detail(linker) {
 
-	var component = grid.datasource.findItem('linker', linker);
-	if (!component)
-		return;
-
 	loading(true);
 
-	AJAX('GET /components/{0}.json'.format(component.id), function(response) {
+	AJAX('GET /components/{0}.json'.format(HASH(linker)), function(response, err) {
+
+		if (err) {
+			loading(false);
+			return;
+		}
 
 		FIND('#detail', function(component) {
 			component.element.find('.ui-form-title b').html(response.name);
@@ -222,7 +223,6 @@ function show_detail(linker) {
 		});
 
 		SET('common.window', 'detail');
-
 	});
 }
 
