@@ -53,10 +53,13 @@
 							<td class="col-xs-4 b">License</td>
 							<td>{{ if license === 'MIT' }}<img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="MIT" class="mr5" />{{ else }}{{ license }}{{ fi }}</td>
 						</tr>
+						<tr>
+							<td class="col-xs-4 b">GitHub</td>
+							<td><a href="{{ name | github }}" target="_blank">{{ name | github }}</a></td>
+						</tr>
 					</tbody>
 				</table>
 				{{ if body }}
-					<h2>Description</h2>
 					<div>{{ body | marked }}</div>
 					<hr />
 				{{ fi }}

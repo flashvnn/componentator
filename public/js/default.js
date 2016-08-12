@@ -1,3 +1,4 @@
+var MONTHS = ['January', 'February', 'March', 'April', 'May', 'Juny', 'July', 'August', 'September', 'October', 'November', 'December'];
 var XS;
 var grid = {};
 var common = {};
@@ -37,6 +38,53 @@ WATCH('common.window', function(path, value) {
 WATCH('grid.filter.q', function(path, value) {
 	$('.search-clean').toggleClass('hidden', !value);
 });
+
+WATCH('grid.filter.q', function(path, value) {
+	var search = (value || '').split(' ');
+	var filter = grid.filter;
+	var words = [];
+
+	filter.page = 1;
+	delete filter.color;
+	delete filter.responsive;
+
+	for (var i = 0, length = search.length; i < length; i++) {
+		var key = search[i].trim().toLowerCase();
+		switch (key) {
+			case 'responsive':
+				filter.responsive = 1;
+				break;
+			case 'red':
+			case 'blue':
+			case 'green':
+			case 'black':
+			case 'silver':
+			case 'yellow':
+			case 'orange':
+			case 'white':
+			case 'purple':
+			case 'transparent':
+				filter.color = key;
+				break;
+			case 'gray':
+				filter.color = 'silver';
+				break;
+			default:
+				words.push(key);
+				break;
+		}
+	}
+
+	filter.q = words.join(' ');
+	var current = JSON.stringify(filter);
+	if (current === last)
+		return;
+	last = current;
+	AJAX('GET /api/components/', filter, function(response) {
+		SET('grid.datasource', response);
+		loading(false, 1000);
+	});
+}, true);
 
 $(document).ready(function() {
 
@@ -117,55 +165,6 @@ function copyclipboard(type) {
 	range = null;
 }
 
-WATCH('grid.filter.q', function(path, value) {
-	var search = (value || '').split(' ');
-	var filter = grid.filter;
-	var words = [];
-
-	filter.page = 1;
-	delete filter.color;
-	delete filter.responsive;
-
-	for (var i = 0, length = search.length; i < length; i++) {
-		var key = search[i].trim().toLowerCase();
-		switch (key) {
-			case 'responsive':
-				filter.responsive = 1;
-				break;
-			case 'red':
-			case 'blue':
-			case 'green':
-			case 'black':
-			case 'silver':
-			case 'yellow':
-			case 'orange':
-			case 'white':
-			case 'purple':
-			case 'transparent':
-				filter.color = key;
-				break;
-			case 'gray':
-				filter.color = 'silver';
-				break;
-			default:
-				words.push(key);
-				break;
-		}
-	}
-
-	filter.q = words.join(' ');
-	var current = JSON.stringify(filter);
-	if (current === last)
-		return;
-	last = current;
-	AJAX('GET /api/components/', filter, function(response) {
-		SET('grid.datasource', response);
-		setTimeout(function() {
-			loading(false);
-		}, 1000);
-	});
-}, true);
-
 function show_detail(linker) {
 
 	var component = grid.datasource.findItem('linker', linker);
@@ -196,11 +195,11 @@ function show_detail(linker) {
 			html_dep += '\t' + line + '\n';
 		});
 
-		Tangular.helpers.children.call(response, response.css, 'css', true).split('\n').forEach(function(line) {
+		Tangular.helpers.children.call(response, response.css || '', 'css', true).split('\n').forEach(function(line) {
 			html_css += '\t\t' + line + '\n';
 		});
 
-		Tangular.helpers.children.call(response, response.js, 'js', true).split('\n').forEach(function(line) {
+		Tangular.helpers.children.call(response, response.js || '', 'js', true).split('\n').forEach(function(line) {
 			html_js += '\t\t' + line + '\n';
 		});
 
@@ -235,75 +234,11 @@ function download() {
 	saveAs(blob, detail.linker + '.html');
 }
 
-Tangular.register('marked', function(value) {
-	return marked(value);
-});
-
-Tangular.register('duplicate', function(value, type) {
-
-	var items = {};
-	var output = [];
-	var lib = { jquery: false, bootstrap: false, bootstrap: false, jc: false };
-
-	value.split('\n').forEach(function(line) {
-		if (items[line])
-			return;
-
-		if (type !== 'css') {
-			if (line.indexOf('jquery') !== -1) {
-				if (lib.jquery)
-					return;
-				lib.jquery = true;
-			}
-
-			if (line.indexOf('awesome') !== -1) {
-				if (lib.font)
-					return;
-				lib.font = true;
-			}
-
-			if (line.indexOf('bootstrap') !== -1) {
-				if (lib.bootstrap)
-					return;
-				lib.bootstrap = true;
-			}
-
-			if (line.indexOf('jcta') !== -1) {
-				if (lib.jc)
-					return;
-				lib.jc = true;
-			}
-		}
-
-		items[line] = true;
-		output.push(line);
-	});
-
-	return output.join('\n');
-});
-
-Tangular.register('children', function(value, type, noencode) {
-
-	if (!this.children)
-		return noencode ? value : Tangular.helpers.encode(value);
-
-	var builder = [''];
-
-	this.children.forEach(function(item) {
-		builder.push(item[type]);
-		builder.push('');
-	});
-
-	return noencode ? value + '\n' + builder.join('\n') : Tangular.helpers.encode(value + '\n' + builder.join('\n'));
-});
-
 COMPONENT('click', function() {
 	var self = this;
 	self.readonly();
 	self.make = function() {
 		self.element.on('click', function() {
-			if (this.disabled)
-				return;
 			self.get()(self);
 		});
 	};
@@ -514,7 +449,16 @@ COMPONENT('template', function() {
 
 function loading(visible, cb) {
 	var el = $('#loading');
-	visible ? el.fadeIn(300, cb) : el.fadeOut(300, cb);
+	var timeout = 0;
+
+	if (typeof(cb) === 'number') {
+		timeout = cb;
+		cb = NOOP;
+	}
+
+	setTimeout(function() {
+		visible ? el.fadeIn(300, cb) : el.fadeOut(300, cb);
+	}, timeout);
 }
 
 function getPages(length, max) {
@@ -525,3 +469,82 @@ function getPages(length, max) {
 		pages = 1;
 	return pages;
 }
+
+Tangular.register('marked', function(value) {
+	return marked(value);
+});
+
+Tangular.register('duplicate', function(value, type) {
+
+	var items = {};
+	var output = [];
+	var lib = { jquery: false, bootstrap: false, bootstrap: false, jc: false };
+
+	value.split('\n').forEach(function(line) {
+		if (items[line])
+			return;
+
+		if (type !== 'css') {
+			if (line.indexOf('jquery') !== -1) {
+				if (lib.jquery)
+					return;
+				lib.jquery = true;
+			}
+
+			if (line.indexOf('awesome') !== -1) {
+				if (lib.font)
+					return;
+				lib.font = true;
+			}
+
+			if (line.indexOf('bootstrap') !== -1) {
+				if (lib.bootstrap)
+					return;
+				lib.bootstrap = true;
+			}
+
+			if (line.indexOf('jcta') !== -1) {
+				if (lib.jc)
+					return;
+				lib.jc = true;
+			}
+		}
+
+		items[line] = true;
+		output.push(line);
+	});
+
+	return output.join('\n');
+});
+
+Tangular.register('children', function(value, type, noencode) {
+
+	if (!this.children)
+		return noencode ? value : Tangular.helpers.encode(value);
+
+	var builder = [''];
+
+	this.children.forEach(function(item) {
+		builder.push(item[type]);
+		builder.push('');
+	});
+
+	return noencode ? value + '\n' + builder.join('\n') : Tangular.helpers.encode(value + '\n' + builder.join('\n'));
+});
+
+Tangular.register('github', function(value) {
+	return 'https://github.com/totaljs/components/tree/master/{0}'.format(encodeURIComponent(value));
+});
+
+Tangular.register('date', function(value) {
+	var dt = value.parseDate();
+	var is = (Date.now() - dt.getTime()) / 1000 / 60000 < 5;
+
+	return (is ? '<span class="badge badge-green mr5">HOT NEW</span>' : '') + dt.format('dd. {0} yyyy').format(MONTHS[dt.getMonth()]);
+});
+
+Tangular.register('changelog', function(value) {
+	if (value)
+		return (Date.now() - value.parseDate().getTime()) / 1000 / 60000 < 5 ? '<span class="badge badge-red mr5">UPDATED</span>' : '';
+	return '';
+});

@@ -24,7 +24,6 @@ NEWSCHEMA('Component').make(function(schema) {
 			if (options.q && item.search.indexOf(options.q) === -1)
 				continue;
 
-			item.datecreated = new Date().format('dd. MMMM yyyy');
 			output.push(item);
 		}
 
@@ -87,7 +86,7 @@ NEWSCHEMA('Component').make(function(schema) {
 									var filename = F.path.public(picture);
 									U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
 									detail.picture = picture;
-									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated });
+									database.push({ id: detail.id, linker: detail.linker, search: detail.search, name: detail.name, tags: detail.tags, color: detail.color, author: detail.author, responsive: detail.responsive, version: detail.version, picture: detail.picture.replace('/public/', ''), datecreated: detail.datecreated, dateupdated: detail.dateupdated });
 									break;
 								case 'example.html':
 									detail.html = response;
@@ -101,6 +100,9 @@ NEWSCHEMA('Component').make(function(schema) {
 								case 'component.js':
 									detail.js = response;
 									break;
+								case 'readme.md':
+									detail.body = response;
+									break;
 							}
 
 						next();
@@ -110,9 +112,10 @@ NEWSCHEMA('Component').make(function(schema) {
 					Fs.writeFile(F.path.public('/components/{0}.json'.format(detail.id)), JSON.stringify(detail), 'utf8', next);
 				});
 			}, function() {
-				database.quicksort('datecreated', true);
-				F.global.database = database;
+				database.quicksort('datecreated', false);
 				Fs.writeFile(F.path.public('/components/database.json'), JSON.stringify(database), 'utf8', NOOP);
+				F.global.database = database;
+				F.touch();
 				callback(SUCCESS(true));
 			});
 		});
