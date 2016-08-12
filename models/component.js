@@ -1,4 +1,5 @@
 const Fs = require('fs');
+const FLAGS = ['get', 'dnscache'];
 
 NEWSCHEMA('Component').make(function(schema) {
 
@@ -54,7 +55,7 @@ NEWSCHEMA('Component').make(function(schema) {
 		var url = CONFIG('repository');
 		var database = [];
 
-		U.request(url + 'components.json', ['get'], function(err, response) {
+		U.request(url + 'components.json', FLAGS, function(err, response) {
 
 			JSON.parse(response).wait(function(item, next) {
 
@@ -73,7 +74,7 @@ NEWSCHEMA('Component').make(function(schema) {
 
 				arr.wait(function(item, next) {
 
-					U.request(item, ['get'], function(err, response, status) {
+					U.request(item, FLAGS, function(err, response, status) {
 
 							if (err || status !== 200)
 								return next();
@@ -85,6 +86,7 @@ NEWSCHEMA('Component').make(function(schema) {
 									detail.search = detail.name.toSearch() + ' ' + detail.tags.join(' ').toSearch();
 									detail.linker = detail.name.slug();
 									detail.depends = detail.dependencies;
+									detail.dateimported = F.datetime;
 									var picture = '/components/{0}.{1}'.format(detail.id, U.getExtension(detail.picture));
 									var filename = F.path.public(picture);
 									U.download(target + detail.picture, ['get'], (err, response) => !err && response.pipe(Fs.createWriteStream(filename)));
