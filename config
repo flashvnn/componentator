@@ -2,5 +2,6 @@ name                                : Componentator
 version                             : 1.0.0
 author                              : Peter Širka
 url                                 : https://componentator.com
+repository                          : https://raw.githubusercontent.com/totaljs/components/master/
 
 disable-clear-temporary-directory   : true

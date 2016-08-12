@@ -51,7 +51,7 @@ NEWSCHEMA('Component').make(function(schema) {
 
 	schema.addWorkflow('download', function(error, model, options, callback) {
 
-		var url = 'https://raw.githubusercontent.com/totaljs/components/master/';
+		var url = CONFIG('repository');
 		var database = [];
 
 		U.request(url + 'components.json', ['get'], function(err, response) {
